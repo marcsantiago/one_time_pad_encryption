@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
   name = 'OneTimePadEncryption',
-  packages = ['OneTimePadEncryptionUtility'],
+  packages = ['OTP'],
   version = '2.0.1',
   author = 'Marc Santiago',
   author_email = 'marcanthonysanti@gmail.com',
