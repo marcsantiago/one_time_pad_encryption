@@ -1,21 +1,32 @@
 #!/usr/bin/env python
 from __future__ import division, absolute_import, print_function, unicode_literals
 __author__ = 'marcsantiago'
+
 from random import choice
 from binascii import hexlify, unhexlify
 from sys import exit, stdout, version_info
 from os import remove
 from zipfile import ZipFile
 from datetime import datetime
-from py3k import *
+
+try:
+    from future_builtins import *
+except ImportError:
+    pass
+
+try:
+    input = raw_input
+    range = xrange
+except NameError:
+    pass
 
 try:
     from pyminizip import compress
 except ImportError:
-    print("Program requires that the pyminizip module be installed")
-    print("To install the easygui module on unix or linux")
-    print("type [pip install pyminizip] terminal")
-    print("If using python3 please use [pip3 install pyminizip]")
+    print("This module requires the pyminizip module.")
+    print("To install the pyminizip module on unix or linux,")
+    print("type [pip install pyminizip] terminal.")
+    print("If using python3 please use [pip3 install pyminizip].")
 
 class OneTimePadEncryption(object):
     """This Class was designed to apply a one time pad encryption
@@ -23,7 +34,7 @@ class OneTimePadEncryption(object):
     manually by the user.  Note, the suffix of the key file and the suffix
     of the encrypted message file will be the same.  This allows
     users to associate key files with their corresponding
-    encrypted text files"""
+    encrypted text files."""
     def __init__(self):
         self.my_key = None
         self.my_string = None
@@ -33,7 +44,7 @@ class OneTimePadEncryption(object):
         self.timestamp = None
 
     def __string_converter(self, text_data):
-        """Takes a given string or file and converts it to binary"""
+        """Takes a given string or file and converts it to binary."""
         if version_info >= (3, 0):
             return bin(int.from_bytes(text_data.encode(), 'big'))
         else:
@@ -56,57 +67,17 @@ class OneTimePadEncryption(object):
                 temp_string += key
             data.write(temp_string)
         return self.__string_converter("".join(key_list))
-    
-    def __password_checker(self, zip_password):
-        """checks the password the user entered to zip secure the key.dat file.
-        Warns the user if the password is too weak and prompts the user if they
-        wish to continue if the password is too weak."""
-        cap = 0
-        special = 0
-        num = 0
-        if len(zip_password) < 8:
-            print("Warning! The password you have entered is less then 8 character.")
-            answer = input("do you wish to continue? [y] or [n]\n").lower()
-            if answer not in ['y', 'yes']:
-                print("Exiting Program...")
-                exit(0)
-        for ch in zip_password:
-            if ch.isdigit():
-                num += 1
-            elif ch.isupper():
-                cap += 1
-            elif ch in "!@#$%^&*":
-                special += 1
-        if num == 0 or cap == 0 or special == 0:
-            print("The password you have entered is weak.")
-            print("A strong password should contain at least one number, one uppercase, and one special character.")
-            print("Your password contains %d numbers, %d uppercase letters, and %d special characters"\
-                  % (num, cap, special))
-            answer = input("do you wish to continue? [y] or [n]\n").lower()
-            if answer not in ['y', 'yes']:
-                print("Exiting Program...")
-                exit(0)
-            else:
-                answer = input("Do you wish to write your zip password to file? [y] or [n]\n").lower()
-                if answer in ['y', 'yes']:
-                    with open("zip_password.txt", 'w') as data:
-                        data.write(zip_password)
-                        return zip_password
-                else:
-                    return zip_password
-        else:
-            return zip_password
                     
-    def __encrypt_file(self, zip_password):
+    def __encrypt_key_file(self, zip_password):
         """Encrypts the key.dat file with a zip encryption using pyminizip.
-        For more instructions regarding pyminizip you visit pypi.python.org
-        and search for the module."""
+        For more instructions regarding pyminizip you can visit pypi.python.org
+        and search for the module or google it."""
         filename = "_".join(["key", self.timestamp])
         compress(filename + ".dat", filename + ".zip", zip_password, int(9))
         remove(filename + ".dat")
 
-    def unzip_file(self, zip_file, zip_password):
-        """Unzips key.zip file using a supplied password"""
+    def __unzip_file(self, zip_file, zip_password):
+        """Unzips key.zip file using a supplied password."""
         if version_info >= (3, 0):
             ZipFile(zip_file).extractall(pwd=str.encode(zip_password))
             print("File unzipped.")
@@ -126,11 +97,12 @@ class OneTimePadEncryption(object):
                 try:
                     if zf.testzip() == None:
                         print("Key.zip is in the wrong format, by does not have a key.")
-                        print("Succesfully extracted, please use the key.dat file as your key and try again!\n")
-                        ZipFile(zip_file).extractall()
+                        ZipFile(key).extractall()
+                        print("Successfully extracted, please use the key.dat file as your key and try again.\n")
+                        exit(0)
                 except:
                     print("Key.zip is encrypted!\n")
-                    self.unzip_file(key, input("Please Enter Password to Unzip Key File and Try Again\n"))
+                    self.__unzip_file(key, input("Please enter the password to unzip the key file and try again.\n"))
                     exit(0)
             else:
                 self.my_key = key
@@ -208,7 +180,6 @@ class OneTimePadEncryption(object):
         with open(filename + ".txt", 'w') as message:
             message.write(encrypted_data)
 
-        self.__encrypt_file(self.__password_checker(input("Please type in a password to zip \
-            and encrypt the key.dat file\n")))
+        self.__encrypt_key_file(input("Please type in a password to zip and encrypt the key.dat file\n"))
         print("Encryption Complete.")
         return encrypted_data

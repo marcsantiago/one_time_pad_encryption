@@ -3,3 +3,4 @@ README.txt
 setup.py
 OneTimePadEncryptionUtility/OneTimePadEncryption.py
 OneTimePadEncryptionUtility/__init__.py
+OneTimePadEncryptionUtility/py3k.py
