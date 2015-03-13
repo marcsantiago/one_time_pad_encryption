@@ -3,6 +3,12 @@ EMAIL: marcanthonysanti@gmail.com
 This module is intended to provided users with a quick and simple way to
 perform a one time pad encryption on text files and strings. 
 
+Getting the Module:
+-------------------------------------------------
+pip install OneTimePadEncryption
+OR
+Download the zip file from github
+
 Usage:
 Import Module
 -------------------------------------------------
