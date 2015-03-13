@@ -11,7 +11,7 @@ setup(
   author = 'Marc Santiago',
   author_email = 'marcanthonysanti@gmail.com',
   url = 'https://github.com/marcsantiago/one_time_pad_encryption', 
-  download_url = 'https://github.com/marcsantiago/one_time_pad_encryption/tarball/0.1', 
+  download_url = 'https://github.com/marcsantiago/one_time_pad_encryption/archive/master.zip', 
   keywords = ['encryption', 'one time pad'],
   description = 'This module is intended to provided users with a quick and simple way to perform\
   a one time pad encryption on text files and string.  It will work with python 2 or 3.', 
